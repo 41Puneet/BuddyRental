@@ -1,9 +1,12 @@
 package com.buddyrental.Entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
-
+import java.util.List;
 import com.buddyrental.enums.Role;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 
 public class User {
     private UUID id;
@@ -124,5 +127,9 @@ public class User {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+    @OneToMany(mappedBy="owner")
+    private List<Vehicle>vehicle=new ArrayList<>();
+    private List<Booking>bookings=new ArrayList<>();
+    private List<UserDocument>documents=new ArrayList<>();
 }
 
