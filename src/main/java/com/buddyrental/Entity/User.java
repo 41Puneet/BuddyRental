@@ -5,15 +5,36 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
 import com.buddyrental.enums.Role;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
+@Entity
+
+@Table(name="users")
 public class User {
+    @Id
+    @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
-    private String name;
+     @Column(nullable=false)
+    private String fullname;
+    @Column(nullable=false, unique=true)
     private String email;
+    @Column(nullable=false)
     private String password;
+     @Column(nullable=false)
     private String phoneNumber;
+    @Enumerated(EnumType.STRING)
     private Role role;
     private String profilePicture;
     private boolean isVerified;
@@ -24,11 +45,11 @@ public class User {
     public User() {
     }
 
-    public User(UUID id, String name, String email, String password, String phoneNumber,
+    public User(UUID id, String fullname, String email, String password, String phoneNumber,
                 Role role, String profilePicture, boolean isVerified,
                 Double rating, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.name = name;
+        this.fullname = fullname;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
@@ -49,11 +70,11 @@ public class User {
     }
 
     public String getName() {
-        return name;
+        return fullname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String fullname) {
+        this.fullname = fullname;
     }
 
     public String getEmail() {
@@ -127,9 +148,21 @@ public class User {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    @OneToMany(mappedBy="owner")
+    @OneToMany(mappedBy="owner" , cascade=CascadeType.ALL,fetch=FetchType.LAZY)
     private List<Vehicle>vehicle=new ArrayList<>();
+    @OneToMany(mappedBy="user", cascade=CascadeType.ALL,fetch=FetchType.LAZY)
     private List<Booking>bookings=new ArrayList<>();
+    @OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private List<UserDocument>documents=new ArrayList<>();
+    @PrePersist
+public void prePersist() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+}
+
+@PreUpdate
+public void preUpdate() {
+    this.updatedAt = LocalDateTime.now();
+}
 }
 

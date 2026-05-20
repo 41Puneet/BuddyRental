@@ -1,5 +1,7 @@
-package com.buddyrental.Entity;
+package com.buddyrental.enums;
 
 public enum Role {
-
+CUSTOMER,
+OWNER,
+ADMIN
 }
