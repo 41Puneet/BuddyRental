@@ -3,9 +3,27 @@ import java.time.LocalDateTime;
 import com.buddyrental.enums.BookingStatus;
 import com.buddyrental.enums.TravelMode;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="booking_items")
 public class BookingItem {
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
+    @ManyToOne
+    @JoinColumn(name="booking_id")
     private Booking booking;
+    @ManyToOne
+    @JoinColumn(name="vehicle_id")
     private Vehicle vehicle;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -15,6 +33,7 @@ public class BookingItem {
     private int pricePerDay;
     private int totalPrice;
     private int trainNumber;
+    @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
 
 
