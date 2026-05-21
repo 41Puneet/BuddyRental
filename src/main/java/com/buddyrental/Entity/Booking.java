@@ -2,25 +2,37 @@ package com.buddyrental.Entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import com.buddyrental.enums.BookingStatus;
 import com.buddyrental.enums.PaymentStatus;
+
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
-
-@Table(name="Booking")
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+@Table(name="booking")
 public class Booking {
     @Id
    @GeneratedValue(strategy=GenerationType.UUID)
-    private int bookingId;
+    private UUID bookingId;
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;
     private int totalPrice;
     private int AdvancePayment;
+    @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -87,7 +99,19 @@ public class Booking {
     public void setUpdatedAt(LocalDateTime updatedAt){
         this.updatedAt=updatedAt;
     }
-    @OneToMany(mappedBy="booking")
+    @OneToMany(mappedBy="booking" , cascade=CascadeType.ALL,fetch=FetchType.LAZY)
     private List<BookingItem>bookingItems=new ArrayList<>();
+    @OneToMany(mappedBy="booking" , cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+    private List<Payment>payments=new ArrayList<>();
+    @PrePersist
+public void prePersist() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+}
+
+@PreUpdate
+public void preUpdate() {
+    this.updatedAt = LocalDateTime.now();
+}
 
 }
