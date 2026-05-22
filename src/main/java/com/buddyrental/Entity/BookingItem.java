@@ -2,45 +2,55 @@ package com.buddyrental.Entity;
 import java.time.LocalDateTime;
 import com.buddyrental.enums.BookingStatus;
 import com.buddyrental.enums.TravelMode;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import java.util.UUID;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 
-@Entity
-@Table(name="booking_items")
+    @Entity
+    @Table(name="booking_items")
 public class BookingItem {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
-    @ManyToOne
+    @GeneratedValue(strategy=GenerationType.UUID)
+    private UUID id;
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="booking_id")
     private Booking booking;
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="vehicle_id")
     private Vehicle vehicle;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    @Column(nullable=false)
     private String pickupLocation;
     private String dropLocation;
+    @Enumerated(EnumType.STRING)
     private TravelMode travelMode;
     private int pricePerDay;
     private int totalPrice;
     private int trainNumber;
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
-
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
 
     public BookingItem(){
 
     }
-    public BookingItem(int id,Booking booking,Vehicle vehicle,LocalDateTime startDate,LocalDateTime endDate,String pickupLocation,String dropLocation,TravelMode travelMode,int pricePerDay,int totalPrice,int trainNumber,BookingStatus bookingStatus) {
+    public BookingItem(UUID id,Booking booking,Vehicle vehicle,LocalDateTime startDate,LocalDateTime endDate,String pickupLocation,String dropLocation,TravelMode travelMode,int pricePerDay,int totalPrice,int trainNumber,BookingStatus bookingStatus,LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.booking = booking;
         this.vehicle = vehicle;
@@ -53,11 +63,13 @@ public class BookingItem {
         this.totalPrice = totalPrice;
         this.trainNumber = trainNumber;
         this.bookingStatus = bookingStatus;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
-    public int getId(){
+    public UUID getId(){
     return id;
     }
-    public void setId(int id){
+    public void setId(UUID id){
         this.id=id;
     }
     public Booking getBooking(){
@@ -126,4 +138,14 @@ public class BookingItem {
     public void setBookingStatus(BookingStatus bookingStatus){
         this.bookingStatus=bookingStatus;
     }
+   @PrePersist
+public void prePersist() {
+this.createdAt = LocalDateTime.now();
+this.updatedAt = LocalDateTime.now();
+}
+
+@PreUpdate
+public void preUpdate() {
+this.updatedAt = LocalDateTime.now();
+}
 }

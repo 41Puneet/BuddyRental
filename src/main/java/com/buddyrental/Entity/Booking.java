@@ -20,6 +20,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import com.buddyrental.Entity.User;
 @Table(name="booking")
 public class Booking {
     @Id
@@ -40,7 +41,7 @@ public class Booking {
     public Booking(){
 
     }
-    public Booking(int bookingId, User user, int totalPrice, int advancePayment, BookingStatus bookingStatus, PaymentStatus paymentStatus, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Booking(UUID bookingId, User user, int totalPrice, int advancePayment, BookingStatus bookingStatus, PaymentStatus paymentStatus, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.bookingId = bookingId;
         this.user = user;
         this.totalPrice = totalPrice;
@@ -50,10 +51,10 @@ public class Booking {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    public int getBookingId(){
+    public UUID getBookingId(){
         return bookingId;
     }
-    public void setBookingId(int bookingId){
+    public void setBookingId(UUID bookingId){
         this.bookingId=bookingId;
     }
     public User getUser(){
