@@ -21,6 +21,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import com.buddyrental.Entity.User;
+import jakarta.persistence.Entity;
+
+@Entity
 @Table(name="booking")
 public class Booking {
     @Id

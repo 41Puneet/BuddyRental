@@ -10,9 +10,10 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.springframework.stereotype.Repository;
 
 
-
+@Repository
 public interface VehicleAvailabilityRepository extends JpaRepository<VehicleAvailability, Long> {
     List<VehicleAvailability> findByVehicleId(UUID vehicleId);
     Page<VehicleAvailability> findByVehicleIdAndDateRange(UUID vehicleId, LocalDate startDate, LocalDate endDate, Pageable pageable);
