@@ -1,6 +1,5 @@
 package com.buddyrental.Repository.Payment;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -16,8 +15,6 @@ import com.buddyrental.Entity.Payment;
 public interface PaymentRepository extends JpaRepository<Payment,UUID> {
 
    List<Payment>findByBookingBookingId(UUID bookingId);
-   Optional<Payment>findByPaymentId(UUID paymentId);
-   List<Payment>findByUserId(UUID userId);
    Page<Payment>findByBookingUserId(UUID userId, Pageable pageable);
    List<Payment>findByTransactionId(String transactionId);
    

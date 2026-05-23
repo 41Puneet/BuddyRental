@@ -10,7 +10,7 @@ public interface VehicleImageRepository extends JpaRepository<VehicleImage,UUID>
     
 
     List<VehicleImage> findByVehicleId(UUID vehicleId);
-    VehicleImage findByVehicleIdAndPrimaryImageTrue(UUID vehicleId);
+    VehicleImage findByVehicleIdAndIsPrimaryTrue(UUID vehicleId);
 
     void deleteByVehicleId(UUID vehicleId);
 

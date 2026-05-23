@@ -20,8 +20,8 @@ public class UserService {
 	}
 
 public User createUser(User user){
-    Optional<User> existingUserByEmail = userRepository.findByEmail(user.getEmail());
-    if(existingUserByEmail.isPresent()){
+    boolean existingUserByEmail = userRepository.existsByEmail(user.getEmail());
+    if(existingUserByEmail){
         throw new RuntimeException("Email already exists");
     }
     boolean existingUserByPhoneNumber = userRepository.existsByPhoneNumber(user.getPhoneNumber());
