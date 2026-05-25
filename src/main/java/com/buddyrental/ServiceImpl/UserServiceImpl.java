@@ -3,11 +3,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.buddyrental.DTO.UserDTO;
-import com.buddyrental.Services.UserService.UserService;
-import com.buddyrental.Repository.User.UserRepository;
-import com.buddyrental.Entity.User;
 import org.springframework.stereotype.Service;
+
+import com.buddyrental.DTO.UserDTO;
+import com.buddyrental.Entity.User;
+import com.buddyrental.Repository.User.UserRepository;
+import com.buddyrental.Services.UserService.UserService;
 @Service
 public class UserServiceImpl implements UserService{
 
@@ -47,27 +48,48 @@ public class UserServiceImpl implements UserService{
     @Override
     public Optional<UserDTO> getUserByEmail(String email) {
         Optional<User> userInDB = userRepository.findByEmail(email);
-        return userInDB.map(this::mapToUserDTO);
+        if (userInDB.isPresent()) {
+            return Optional.of(mapToUserDTO(userInDB.get()));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<UserDTO> getUserById(UUID id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Optional<User> userInDB = userRepository.findById(id);
+        if (userInDB.isPresent()) {
+            return Optional.of(mapToUserDTO(userInDB.get()));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
     public void deleteUser(UUID id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
     }
 
     @Override
     public UserDTO updateUser(UUID id, UserDTO userDTO) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found with id: " + id);
+        }
+        User user = userRepository.findById(id).get();
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        User savedUser = userRepository.save(user);
+        return mapToUserDTO(savedUser);
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<User> users = userRepository.findAll();
+        return users.stream().map(this::mapToUserDTO).toList();
     }
 
 }
