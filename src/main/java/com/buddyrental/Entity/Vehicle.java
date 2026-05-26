@@ -28,9 +28,9 @@ import jakarta.persistence.Id;
 public class Vehicle {
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
-   private UUID id;
+   private UUID VehicleId;
    @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_VehicleId")
     private User owner;
     private VehicleType type;
     private String brand;
@@ -52,8 +52,8 @@ public class Vehicle {
     public Vehicle(){
 
     }
-    public Vehicle(UUID id,User owner, VehicleType type, String brand, String vehicleNumber, String description ,int pricePerDay, int secuityDeposit, Fueltype fueltype, TransmissionType transmissionType, String City, String state, Double longitude, Double latitude, boolean isAvailable, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
+    public Vehicle(UUID VehicleId,User owner, VehicleType type, String brand, String vehicleNumber, String description ,int pricePerDay, int secuityDeposit, Fueltype fueltype, TransmissionType transmissionType, String City, String state, Double longitude, Double latitude, boolean isAvailable, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.VehicleId = VehicleId;
         this.owner = owner;
         this.type = type;
         this.brand = brand;
@@ -71,11 +71,11 @@ public class Vehicle {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-        public UUID getId() {
-        return id;
+        public UUID getVehicleId() {
+        return VehicleId;
         }
-        public void setId(UUID id) {
-        this.id = id;
+        public void setVehicleId(UUID VehicleId) {
+        this.VehicleId = VehicleId;
         }
         public User getOwner() {
         return owner;
