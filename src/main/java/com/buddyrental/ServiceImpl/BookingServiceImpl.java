@@ -1,0 +1,106 @@
+package com.buddyrental.ServiceImpl;
+import com.buddyrental.DTO.BookingDTO;
+import com.buddyrental.Services.BookingService;
+import com.buddyrental.enums.BookingStatus;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+import com.buddyrental.Entity.Booking;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import com.buddyrental.Repository.Booking.BookingHistoryRepository;
+import com.buddyrental.Entity.User;
+import com.buddyrental.Repository.User.UserRepository;
+
+
+
+@Service
+public class BookingServiceImpl implements BookingService {
+
+    private final BookingHistoryRepository bookingRepository;
+    private final UserRepository userRepository;
+
+    public BookingServiceImpl(BookingHistoryRepository bookingRepository,UserRepository userRepository){
+        this.bookingRepository=bookingRepository;
+        this.userRepository=userRepository;
+    }
+        private BookingDTO mapToBookingDTO(Booking booking){
+            if(booking==null) return null;
+            BookingDTO dto=new BookingDTO();
+            
+            dto.setTotalPrice(booking.getTotalPrice());
+            dto.setadvancePayment(booking.getadvancePayment());
+            dto.setBookingStatus(booking.getBookingStatus());
+            dto.setPaymentStatus(booking.getPaymentStatus());
+            return dto;
+        }
+
+    @Override
+    public BookingDTO createBooking(BookingDTO bookingDTO) {
+        Booking booking =new Booking();
+        booking.setTotalPrice(bookingDTO.getTotalPrice());
+        booking.setadvancePayment(bookingDTO.getadvancePayment());
+        booking.setBookingStatus(bookingDTO.getBookingStatus());
+        booking.setPaymentStatus(bookingDTO.getPaymentStatus());
+        Booking savedBooking=bookingRepository.save(booking);
+        return mapToBookingDTO(savedBooking);
+    }
+
+    @Override
+    public void deleteBooking(UUID bookingId) {
+        Optional<Booking>bookingOpt=bookingRepository.findById(bookingId);
+        if(bookingOpt.isPresent()){
+            bookingRepository.deleteById(bookingId);
+        }else{
+            throw new IllegalArgumentException("Booking not found with id: "+bookingId);
+        }
+        
+    }
+
+    @Override
+    public Page<BookingDTO> findByBookingStatus(BookingStatus bookingStatus, Pageable pageable) {
+        Page<Booking>booking=bookingRepository.findByBookingStatus(bookingStatus,pageable);
+        return booking.map(this::mapToBookingDTO);
+    }
+
+    @Override
+    public Page<BookingDTO> findByUserIdAndBookingStatus(UUID userId, BookingStatus bookingStatus, Pageable pageable) {
+        Page<Booking>booking=bookingRepository.findByUserIdAndBookingStatus(userId, bookingStatus, pageable);
+        return booking.map(this::mapToBookingDTO);
+        
+    }
+
+    @Override
+    public Optional<BookingDTO> getBookingById(UUID bookingId) {
+        Optional<Booking>bookingOpt=bookingRepository.findById(bookingId);
+        return bookingOpt.map(this::mapToBookingDTO);
+        
+    }
+
+    @Override
+    public Page<BookingDTO> getBookingByUserId(UUID userId, Pageable pageable) {
+       Page<Booking>booking=bookingRepository.findByUserId(userId,pageable);
+       return booking.map(this::mapToBookingDTO);
+        
+    }
+
+    @Override
+    public Page<BookingDTO> getBookingsByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        Page<Booking>booking=bookingRepository.findByCreatedAtBetween(startDate, endDate, pageable);
+        return booking.map(this::mapToBookingDTO);
+        
+    }
+
+    @Override
+    public BookingDTO updateBooking(UUID bookingId, BookingDTO bookingDTO) {
+        Booking booking=bookingRepository.findById(bookingId).orElseThrow(()->new IllegalArgumentException("Booking not found with id: "+bookingId));
+        booking.setTotalPrice(bookingDTO.getTotalPrice());
+        booking.setadvancePayment(bookingDTO.getadvancePayment());
+        booking.setBookingStatus(bookingDTO.getBookingStatus());
+        booking.setPaymentStatus(bookingDTO.getPaymentStatus());
+        Booking updatedBooking=bookingRepository.save(booking);
+        return mapToBookingDTO(updatedBooking);
+    }
+    
+}
