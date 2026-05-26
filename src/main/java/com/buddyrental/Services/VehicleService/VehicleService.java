@@ -19,5 +19,4 @@ public interface VehicleService {
     Page<VehicleDTO>getVehicleByFuelType(Fueltype fuelType,int page,int size);
     Page<VehicleDTO>getVehicleByTransmissionType(TransmissionType transmissionType,int page,int size);
     Page<VehicleDTO>getVehicleByFilters(VehicleType type,boolean isAvailable,int minPrice,int maxPrice,TransmissionType transmissionType,Fueltype fueltype,int page,int size);
-
 }
