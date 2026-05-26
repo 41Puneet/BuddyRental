@@ -13,20 +13,14 @@ import com.buddyrental.enums.BookingStatus;
 
 public interface BookingHistoryRepository
         extends JpaRepository<Booking, UUID> {
-
-    
     Page<Booking> findByUserId(
             UUID userId,
             Pageable pageable
     );
-
-   
     Page<Booking> findByBookingStatus(
             BookingStatus bookingStatus,
             Pageable pageable
     );
-
-    
     Page<Booking> findByUserIdAndBookingStatus(
             UUID userId,
             BookingStatus bookingStatus,
@@ -35,8 +29,6 @@ public interface BookingHistoryRepository
 
     
     List<Booking> findTop10ByOrderByCreatedAtDesc();
-
-    
     Page<Booking> findByCreatedAtBetween(
             LocalDateTime start,
             LocalDateTime end,
