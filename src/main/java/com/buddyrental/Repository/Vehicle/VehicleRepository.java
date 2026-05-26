@@ -1,21 +1,19 @@
 package com.buddyrental.Repository.Vehicle;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.buddyrental.Entity.Vehicle;
-
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.buddyrental.enums.VehicleType;
+import com.buddyrental.Entity.Vehicle;
 import com.buddyrental.enums.Fueltype;
 import com.buddyrental.enums.TransmissionType;
+import com.buddyrental.enums.VehicleType;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, UUID> {
-    List<Vehicle>findByBrandContainingIgnoreCase(String brand);
+    
     Page<Vehicle> findByBrandContainingIgnoreCase(String brand, Pageable pageable);
    List<Vehicle> findByOwnerId(UUID ownerId);
    Page<Vehicle>findByCityAndIsAvailable(String city, boolean isAvailable,Pageable pageable);

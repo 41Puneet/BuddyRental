@@ -1,20 +1,22 @@
 package com.buddyrental.ServiceImpl;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.buddyrental.DTO.VehicleDTO;
+import com.buddyrental.Entity.User;
+import com.buddyrental.Entity.Vehicle;
+import com.buddyrental.Repository.User.UserRepository;
+import com.buddyrental.Repository.Vehicle.VehicleRepository;
 import com.buddyrental.Services.VehicleService.VehicleService;
 import com.buddyrental.enums.Fueltype;
 import com.buddyrental.enums.TransmissionType;
 import com.buddyrental.enums.VehicleType;
-import com.buddyrental.Entity.Vehicle;
-import java.util.List;
-import java.util.UUID;
-import com.buddyrental.Repository.Vehicle.VehicleRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
-import com.buddyrental.Repository.User.UserRepository;
-import com.buddyrental.Entity.User;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import java.util.Optional;
 
 @Service
 public class VehicleServiceImpl implements VehicleService{
@@ -23,9 +25,6 @@ public class VehicleServiceImpl implements VehicleService{
     public VehicleServiceImpl(UserRepository userRepository,VehicleRepository vehicleRepository){
         this.vehicleRepository=vehicleRepository;
         this.userRepository=userRepository;
-    }
-    public VehicleServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
     }
     @Override
     public VehicleDTO addVehicle(VehicleDTO vehicleDTO) {

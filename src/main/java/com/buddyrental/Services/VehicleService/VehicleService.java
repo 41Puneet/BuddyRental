@@ -1,15 +1,18 @@
 package com.buddyrental.Services.VehicleService;
-import com.buddyrental.DTO.VehicleDTO;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.data.domain.Page;
-import java.util.List; 
-import com.buddyrental.enums.VehicleType;
+
+import com.buddyrental.DTO.VehicleDTO;
 import com.buddyrental.enums.Fueltype;
 import com.buddyrental.enums.TransmissionType;
+import com.buddyrental.enums.VehicleType;
 
 public interface VehicleService {
    VehicleDTO addVehicle(VehicleDTO vehicleDTO);
-   VehicleDTO getVehicleById(UUID vehicleId);
+   Optional<VehicleDTO> getVehicleById(UUID vehicleId);
    VehicleDTO updateVehicle(UUID vehicleId,VehicleDTO vehicleDTO);
    void deleteVehicle(UUID vehicleId);
    Page<VehicleDTO> getVehicleByBrand(String brand,int page,int size);
