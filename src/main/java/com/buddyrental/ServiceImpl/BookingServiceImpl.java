@@ -1,17 +1,18 @@
 package com.buddyrental.ServiceImpl;
-import com.buddyrental.DTO.BookingDTO;
-import com.buddyrental.Services.BookingService;
-import com.buddyrental.enums.BookingStatus;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-import com.buddyrental.Entity.Booking;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.buddyrental.DTO.BookingDTO;
+import com.buddyrental.Entity.Booking;
 import com.buddyrental.Repository.Booking.BookingHistoryRepository;
-import com.buddyrental.Entity.User;
 import com.buddyrental.Repository.User.UserRepository;
+import com.buddyrental.Services.BookingService;
+import com.buddyrental.enums.BookingStatus;
 
 
 
@@ -39,6 +40,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDTO createBooking(BookingDTO bookingDTO) {
         Booking booking =new Booking();
+        booking.setUser(userRepository.findById(bookingDTO.getUserId()).orElseThrow(()->new IllegalArgumentException("User not found with id: "+bookingDTO.getUserId())));
         booking.setTotalPrice(bookingDTO.getTotalPrice());
         booking.setadvancePayment(bookingDTO.getadvancePayment());
         booking.setBookingStatus(bookingDTO.getBookingStatus());

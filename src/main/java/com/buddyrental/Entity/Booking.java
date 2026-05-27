@@ -20,7 +20,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
-import com.buddyrental.Entity.User;
 import jakarta.persistence.Entity;
 
 @Entity
@@ -33,7 +32,7 @@ public class Booking {
     @JoinColumn(name="user_id")
     private User user;
     private int totalPrice;
-    private int AdvancePayment;
+    private int advancePayment;
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
     @Enumerated(EnumType.STRING)
@@ -48,7 +47,7 @@ public class Booking {
         this.bookingId = bookingId;
         this.user = user;
         this.totalPrice = totalPrice;
-        this.AdvancePayment = advancePayment;
+        this.advancePayment = advancePayment;
         this.bookingStatus = bookingStatus;
         this.paymentStatus = paymentStatus;
         this.createdAt = createdAt;
@@ -73,11 +72,11 @@ public class Booking {
     public void setTotalPrice(int totalPrice){
         this.totalPrice=totalPrice; 
     }
-    public int getAdvancePayment(){
-        return AdvancePayment;
+    public int getadvancePayment(){
+        return advancePayment;
     }
-    public void setAdvancePayment(int advancePayment){
-        this.AdvancePayment=advancePayment;
+    public void setadvancePayment(int advancePayment){
+        this.advancePayment=advancePayment;
     }
     public BookingStatus getBookingStatus(){
         return bookingStatus;
