@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import com.buddyrental.enums.PaymentStatus;
 import com.buddyrental.DTO.PaymentDTO;
 import com.buddyrental.Entity.Booking;
 import com.buddyrental.Entity.Payment;
@@ -51,10 +51,24 @@ public class PaymentServiceImpl implements PaymentService {
         return dto;
     }
 
+    
+
     @Override
-    public void deletePayment(UUID paymentId) {
-       
-        
+    public PaymentDTO cancelPayment(UUID paymentId) {
+        Payment payment=paymentRepository.findById(paymentId).orElseThrow(()->new IllegalArgumentException("Payment not found with this paymentId"+paymentId));
+        payment.setPaymentStatus(PaymentStatus.Cancelled);
+        Payment cancelledPayment=paymentRepository.save(payment);
+        return mapToDTO(cancelledPayment);
+    }
+
+    @Override
+    public PaymentDTO refundPayment(UUID paymentId) {
+        Optional<Payment>payment=paymentRepository.findById(paymentId);
+        if(payment.isPresent()){
+            Payment existingPayment=payment.get();
+            existingPayment.setPaymentStatus(PaymentStatus.Refund);
+        }
+        throw new IllegalArgumentException("Payment not found");
     }
 
     @Override
@@ -94,7 +108,7 @@ return payment.map(this::mapToDTO);
         Payment updatedPayment=paymentRepository.save(existingPayment);
         return mapToDTO(updatedPayment);
     }
-        return null;
+        throw new IllegalArgumentException("Payment not found");
     }
     
 }
