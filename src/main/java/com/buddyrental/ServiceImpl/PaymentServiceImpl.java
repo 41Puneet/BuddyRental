@@ -6,13 +6,14 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.buddyrental.enums.PaymentStatus;
+
 import com.buddyrental.DTO.PaymentDTO;
 import com.buddyrental.Entity.Booking;
 import com.buddyrental.Entity.Payment;
 import com.buddyrental.Repository.Booking.BookingHistoryRepository;
 import com.buddyrental.Repository.Payment.PaymentRepository;
 import com.buddyrental.Services.PaymentService;
+import com.buddyrental.enums.PaymentStatus;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -56,21 +57,19 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDTO cancelPayment(UUID paymentId) {
         Payment payment=paymentRepository.findById(paymentId).orElseThrow(()->new IllegalArgumentException("Payment not found with this paymentId"+paymentId));
-        payment.setPaymentStatus(PaymentStatus.Cancelled);
+        payment.setPaymentStatus(PaymentStatus.Failed);
         Payment cancelledPayment=paymentRepository.save(payment);
         return mapToDTO(cancelledPayment);
     }
 
     @Override
     public PaymentDTO refundPayment(UUID paymentId) {
-        Optional<Payment>payment=paymentRepository.findById(paymentId);
-        if(payment.isPresent()){
-            Payment existingPayment=payment.get();
-            existingPayment.setPaymentStatus(PaymentStatus.Refund);
-        }
-        throw new IllegalArgumentException("Payment not found");
+        Payment payment=paymentRepository.findById(paymentId).orElseThrow(()->new IllegalArgumentException("Payment not found with this paymentId "+paymentId));
+        payment.setPaymentStatus(PaymentStatus.Refund);
+        Payment refundedPayment=paymentRepository.save(payment);
+        return mapToDTO(refundedPayment);
     }
-
+ 
     @Override
     public Optional<PaymentDTO> getPaymentById(UUID id) {
        Optional<Payment>optPayment=paymentRepository.getPaymentById(id);
