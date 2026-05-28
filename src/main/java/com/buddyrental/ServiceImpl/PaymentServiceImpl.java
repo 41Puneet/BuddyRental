@@ -1,16 +1,18 @@
 package com.buddyrental.ServiceImpl;
-import com.buddyrental.DTO.PaymentDTO;
-import com.buddyrental.Services.PaymentService;
-import com.buddyrental.Repository.Booking.BookingHistoryRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import com.buddyrental.Repository.Payment.PaymentRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.buddyrental.DTO.PaymentDTO;
 import com.buddyrental.Entity.Booking;
 import com.buddyrental.Entity.Payment;
+import com.buddyrental.Repository.Booking.BookingHistoryRepository;
+import com.buddyrental.Repository.Payment.PaymentRepository;
+import com.buddyrental.Services.PaymentService;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -28,7 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
        Booking booking=bookingHistoryRepository.findById(paymentDTO.getBookingId()).orElseThrow(()->new IllegalArgumentException("Booking not found"));
        Payment payment=new Payment();
        payment.setBooking(booking);
-       payment.setTransactionId(paymentDTO.getTransactionId());
+       payment.setTransactionId(String.valueOf(paymentDTO.getTransactionId()));
          payment.setAmount(paymentDTO.getAmount());
             payment.setPaymentMethod(paymentDTO.getPaymentMethod());
             payment.setPaymentStatus(paymentDTO.getPaymentStatus());
@@ -51,37 +53,47 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public void deletePayment(UUID paymentId) {
-        
+       
         
     }
 
     @Override
-    public Optional<PaymentDTO> getPaymentById(UUID paymentId) {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+    public Optional<PaymentDTO> getPaymentById(UUID id) {
+       Optional<Payment>optPayment=paymentRepository.getPaymentById(id);
+     return optPayment.map(this::mapToDTO);
     }
 
     @Override
     public List<PaymentDTO> getPaymentsByBookingId(UUID bookingId) {
-        // TODO Auto-generated method stub
-        return null;
+        List<Payment>payment=paymentRepository.findByBookingBookingId(bookingId);
+        return payment.stream().map(this::mapToDTO).toList();
     }
 
     @Override
     public Optional<PaymentDTO> getPaymentsByTransactionId(String transactionId) {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+    Optional<Payment>payment=paymentRepository.findByTransactionId(transactionId);
+return payment.map(this::mapToDTO);
     }
 
     @Override
     public Page<PaymentDTO> getPaymentsByUserId(UUID userId, Pageable pageable) {
-        // TODO Auto-generated method stub
-        return null;
+        Page<Payment>payment=paymentRepository.findByBookingUserId(userId,pageable);
+        return payment.map(this::mapToDTO);
     }
 
     @Override
     public PaymentDTO updatePayment(UUID paymentId, PaymentDTO paymentDTO) {
-        // TODO Auto-generated method stub
+    Optional<Payment>payment=paymentRepository.findById(paymentId);
+    if(payment.isPresent()){
+        Payment existingPayment=payment.get();
+        existingPayment.setTransactionId(paymentDTO.getTransactionId());
+        existingPayment.setAmount(paymentDTO.getAmount());
+        existingPayment.setPaymentMethod(paymentDTO.getPaymentMethod());
+        existingPayment.setPaymentStatus(paymentDTO.getPaymentStatus());
+        existingPayment.setGatewayName(paymentDTO.getGatewayName());
+        Payment updatedPayment=paymentRepository.save(existingPayment);
+        return mapToDTO(updatedPayment);
+    }
         return null;
     }
     
