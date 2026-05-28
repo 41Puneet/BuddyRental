@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
+import java.util.Optional;
 import com.buddyrental.Entity.Payment;
 
 
@@ -16,7 +16,7 @@ public interface PaymentRepository extends JpaRepository<Payment,UUID> {
 
    List<Payment>findByBookingBookingId(UUID bookingId);
    Page<Payment>findByBookingUserId(UUID userId, Pageable pageable);
-   List<Payment>findByTransactionId(String transactionId);
+   Optional<Payment>findByTransactionId(String transactionId);
    
 
 

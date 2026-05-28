@@ -22,7 +22,7 @@ public class Payment {
    @ManyToOne
    @JoinColumn(name="booking_id")
    private Booking booking;
-   private String transaction_id;
+   private String transactionId;
    private int amount;
    @Enumerated(EnumType.STRING)
    private PaymentMethod paymentMethod;
@@ -34,10 +34,10 @@ public class Payment {
    public Payment(){
 
    }
-   public Payment(UUID id,Booking booking,String transaction_id,int amount,PaymentMethod paymentMethod,PaymentStatus paymentStatus,GatewayName gatewayName){
+   public Payment(UUID id,Booking booking,String transactionId,int amount,PaymentMethod paymentMethod,PaymentStatus paymentStatus,GatewayName gatewayName){
     this.id=id;
     this.booking=booking;
-    this.transaction_id=transaction_id;
+    this.transactionId=transactionId;
     this.amount=amount;
     this.paymentMethod=paymentMethod;
     this.paymentStatus=paymentStatus;
@@ -56,10 +56,10 @@ public class Payment {
     this.booking=booking;
    }
    public String getTransactionId(){
-    return transaction_id;
+    return transactionId;
    }
-   public void setTransactionId(String transaction_id){
-    this.transaction_id=transaction_id;
+   public void setTransactionId(String transactionId){
+    this.transactionId=transactionId;
    }
    public int getAmount(){
     return amount;
