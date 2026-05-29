@@ -1,14 +1,15 @@
 package com.buddyrental.Controllers;
+import java.util.UUID;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buddyrental.ServiceImpl.UserServiceImpl;
 import com.buddyrental.DTO.UserDTO;
-import com.buddyrental.Entity.User;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.buddyrental.ServiceImpl.UserServiceImpl;
 
 
 @RestController
@@ -25,9 +26,16 @@ public UserController(UserServiceImpl userServiceImpl) {
 public UserDTO createUser(@RequestBody UserDTO userDTO){
 return userServiceImpl.createUser(userDTO);
 }
-@PostMapping("/email/{email}")
+@PostMapping("/get/email/{email}")
 public UserDTO getUserByEmail(@PathVariable String email){
 return userServiceImpl.getUserByEmail(email).orElse(null);
 }
-
+@PostMapping("/get/Id/{id}")
+public UserDTO getUserById(@PathVariable UUID id){
+    return userServiceImpl.getUserById(id).orElse(null);
+}
+@DeleteMapping("/delete/{id}")
+public void deleteUserById(@PathVariable UUID id){
+    userServiceImpl.deleteUser(id);
+}
 }
