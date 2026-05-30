@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
 import com.buddyrental.DTO.UserDTO;
 import com.buddyrental.ServiceImpl.UserServiceImpl;
 
@@ -37,5 +39,13 @@ public UserDTO getUserById(@PathVariable UUID id){
 @DeleteMapping("/delete/{id}")
 public void deleteUserById(@PathVariable UUID id){
     userServiceImpl.deleteUser(id);
+}
+@PutMapping("/update/{id}")
+public UserDTO updateUser(@PathVariable UUID id,@RequestBody UserDTO userDTO){
+    return userServiceImpl.updateUser(id, userDTO);
+}
+@GetMapping("/users/allUser")
+public List<UserDTO> getAllUsers(){
+    return userServiceImpl.getAllUsers();
 }
 }
