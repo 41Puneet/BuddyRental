@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import com.buddyrental.DTO.UserDTO;
-import com.buddyrental.ServiceImpl.UserServiceImpl;
+import com.buddyrental.Services.UserService.UserService;
 
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     
-private final UserServiceImpl userServiceImpl;
+private final UserService userServiceImpl;
 
-public UserController(UserServiceImpl userServiceImpl) {
+public UserController(UserService userServiceImpl) {
     this.userServiceImpl = userServiceImpl;
 }
 
