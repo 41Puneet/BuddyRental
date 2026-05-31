@@ -9,13 +9,16 @@ import com.buddyrental.DTO.UserDTO;
 import com.buddyrental.Entity.User;
 import com.buddyrental.Repository.User.UserRepository;
 import com.buddyrental.Services.UserService.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Service
 public class UserServiceImpl implements UserService{
 
-
+   private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder=passwordEncoder;
     }
     @Override
     public UserDTO createUser(UserRegisterDTO userRegisterDTO) {
@@ -28,9 +31,10 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("Phone number already exists");
         }
         User user=new User();
-        user.setName(userRegisterDTO.name());
-        user.setEmail(userRegisterDTO.email());
-        user.setPhoneNumber(userRegisterDTO.phoneNumber());
+        user.setName(userRegisterDTO.getFullname());
+        user.setEmail(userRegisterDTO.getEmail());
+        user.setPhoneNumber(userRegisterDTO.getPhoneNumber());
+        user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
         User savedUser=userRepository.save(user);
         return mapToUserDTO(savedUser);
     }
