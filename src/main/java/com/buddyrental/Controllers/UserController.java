@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import com.buddyrental.DTO.UserDTO;
+import com.buddyrental.DTO.UserRegisterDTO;
 import com.buddyrental.Services.UserService.UserService;
 
 
@@ -25,8 +26,8 @@ public UserController(UserService userServiceImpl) {
 }
 
 @PostMapping("/sign-up")
-public UserDTO createUser(@RequestBody UserDTO userDTO){
-return userServiceImpl.createUser(userDTO);
+public UserDTO createUser(@RequestBody UserRegisterDTO userRegisterDTO){
+return userServiceImpl.createUser(userRegisterDTO);
 }
 @PostMapping("/get/email/{email}")
 public UserDTO getUserByEmail(@PathVariable String email){

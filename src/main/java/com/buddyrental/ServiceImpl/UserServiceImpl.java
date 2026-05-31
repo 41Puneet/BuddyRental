@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-
+import com.buddyrental.DTO.UserRegisterDTO;
 import com.buddyrental.DTO.UserDTO;
 import com.buddyrental.Entity.User;
 import com.buddyrental.Repository.User.UserRepository;
@@ -18,19 +18,19 @@ public class UserServiceImpl implements UserService{
         this.userRepository = userRepository;
     }
     @Override
-    public UserDTO createUser(UserDTO userDTO) {
-       Optional <User>UserInDB=userRepository.findByEmail(userDTO.getEmail());
+    public UserDTO createUser(UserRegisterDTO userRegisterDTO) {
+       Optional <User>UserInDB=userRepository.findByEmail(userRegisterDTO.getEmail());
       if(UserInDB.isPresent()){
         throw new IllegalArgumentException("Email already exists");
       }
-      Optional<User>PhoneInDB=userRepository.findByPhoneNumber(userDTO.getPhoneNumber());
+      Optional<User>PhoneInDB=userRepository.findByPhoneNumber(userRegisterDTO.getPhoneNumber());
         if(PhoneInDB.isPresent()){
             throw new IllegalArgumentException("Phone number already exists");
         }
         User user=new User();
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setName(userRegisterDTO.name());
+        user.setEmail(userRegisterDTO.email());
+        user.setPhoneNumber(userRegisterDTO.phoneNumber());
         User savedUser=userRepository.save(user);
         return mapToUserDTO(savedUser);
     }

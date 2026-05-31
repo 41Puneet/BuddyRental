@@ -2,7 +2,6 @@ package com.buddyrental.Controllers;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,11 +9,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.buddyrental.DTO.BookingDTO;
 import com.buddyrental.Services.BookingService;
 import com.buddyrental.enums.BookingStatus;
@@ -26,9 +25,6 @@ import com.buddyrental.enums.BookingStatus;
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
-    
-
-
     private final BookingService bookingService;
 
     public BookingController(BookingService bookingService){
@@ -43,6 +39,20 @@ public class BookingController {
     public void deleteBooking(@PathVariable UUID bookingId){
         bookingService.deleteBooking(bookingId);
     }
+    @GetMapping("/user/{userId}/status/{bookingStatus}")
+public Page<BookingDTO> findByUserIdAndBookingStatus(
+        @PathVariable UUID userId,
+        @PathVariable BookingStatus bookingStatus,
+        @RequestParam int page,
+        @RequestParam int size) {
+
+    Pageable pageable = PageRequest.of(page, size);
+
+    return bookingService.findByUserIdAndBookingStatus(
+            userId,
+            bookingStatus,
+            pageable);
+}
 @GetMapping("/status/{bookingStatus}")
 public Page<BookingDTO> findByBookingStatus(@PathVariable BookingStatus bookingStatus, @RequestParam int page, @RequestParam int size){
     Pageable pageable = PageRequest.of(page, size);
@@ -63,6 +73,10 @@ public Page<BookingDTO> getBookingsByDateRange(@PathVariable String startDate, @
     LocalDateTime endDateTime = LocalDateTime.parse(endDate);
     Pageable pageable = PageRequest.of(page, size);
     return bookingService.getBookingsByDateRange(startDateTime, endDateTime, pageable);
-}       
+} 
+@PutMapping("/update/{bookingId}")
+public BookingDTO updateUser(@PathVariable UUID bookingId, @RequestBody BookingDTO bookingDTO){
+    return bookingService.updateBooking(bookingId, bookingDTO);
+}
 }
 

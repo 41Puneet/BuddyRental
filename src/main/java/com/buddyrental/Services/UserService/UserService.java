@@ -2,11 +2,12 @@ package com.buddyrental.Services.UserService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID; 
+import com.buddyrental.DTO.UserRegisterDTO;
 
 import com.buddyrental.DTO.UserDTO;
 
 public interface UserService {
-    UserDTO createUser(UserDTO userDTO);
+    UserDTO createUser(UserRegisterDTO userDTO);
     Optional<UserDTO>getUserByEmail(String email);
     Optional<UserDTO>getUserById(UUID id);
     void deleteUser(UUID id);
