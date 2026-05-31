@@ -9,10 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
 import java.util.List;
+import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
+
 import com.buddyrental.DTO.UserDTO;
 import com.buddyrental.DTO.UserRegisterDTO;
 import com.buddyrental.Services.UserService.UserService;
+import com.buddyrental.Auth.LoginRequest;
+import com.buddyrental.Auth.LoginResponse;
 
 
 @RestController
@@ -38,15 +44,21 @@ public UserDTO getUserById(@PathVariable UUID id){
     return userServiceImpl.getUserById(id).orElse(null);
 }
 @DeleteMapping("/delete/{id}")
-public void deleteUserById(@PathVariable UUID id){
+public ResponseEntity<String> deleteUserById(@PathVariable UUID id){
     userServiceImpl.deleteUser(id);
+    return ResponseEntity.ok("user deleted successfully");
 }
-@PutMapping("/update/{id}")
-public UserDTO updateUser(@PathVariable UUID id,@RequestBody UserDTO userDTO){
-    return userServiceImpl.updateUser(id, userDTO);
+@PutMapping("/update")
+public ResponseEntity<UserDTO> updateUser(Authentication authentication, @RequestBody UserDTO userDTO){
+    return new ResponseEntity<>(userServiceImpl.updateUser(UUID.fromString(authentication.getName()), userDTO), HttpStatus.OK);
 }
 @GetMapping("/users/allUser")
 public List<UserDTO> getAllUsers(){
     return userServiceImpl.getAllUsers();
 }
+@PostMapping("/login")
+public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
+    return new ResponseEntity<>(userServiceImpl.login(loginRequest),HttpStatus.OK);
+}
+
 }

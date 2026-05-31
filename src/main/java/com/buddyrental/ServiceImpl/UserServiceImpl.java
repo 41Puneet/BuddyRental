@@ -3,27 +3,36 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.buddyrental.DTO.UserRegisterDTO;
 import com.buddyrental.Auth.LoginRequest;
 import com.buddyrental.Auth.LoginResponse;
+import com.buddyrental.Auth.Security.JwtService;
 import com.buddyrental.DTO.UserDTO;
-import com.buddyrental.DTO.UserRegisterDTO;
 import com.buddyrental.Entity.User;
 import com.buddyrental.Repository.User.UserRepository;
 import com.buddyrental.Services.UserService.UserService;
 import com.buddyrental.enums.Role;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserServiceImpl implements UserService{
 
    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder) {
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder,AuthenticationManager authenticationManager,JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder=passwordEncoder;
+        this.authenticationManager=authenticationManager;
+        this.jwtService=jwtService;
     }
+
+
+    //Create a User Method
     @Override
     public UserDTO createUser(UserRegisterDTO userRegisterDTO) {
        Optional <User>UserInDB=userRepository.findByEmail(userRegisterDTO.getEmail());
@@ -39,11 +48,10 @@ public class UserServiceImpl implements UserService{
         user.setEmail(userRegisterDTO.getEmail());
         user.setPhoneNumber(userRegisterDTO.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
-        user.setRole(Role.CUSTOMER);
         User savedUser=userRepository.save(user);
         return mapToUserDTO(savedUser);
     }
-
+  // Helper function of create Method
     private UserDTO mapToUserDTO(User user){
         if(user==null) return null;
         UserDTO dto = new UserDTO();
@@ -79,20 +87,13 @@ public class UserServiceImpl implements UserService{
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
+        // delete the user if it exists
         userRepository.deleteById(id);
-    }
-
-    private boolean isLogin(LoginRequest loginRequest) {
-        Optional<User> user = userRepository.findByEmail(loginRequest.getEmail());
-        if (user.isPresent()) {
-            return passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword());
-        } else {
-            throw new IllegalArgumentException("User not found");
-        }
     }
 
     @Override
     public UserDTO updateUser(UUID id, UserDTO userDTO) {
+        
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
@@ -102,6 +103,7 @@ public class UserServiceImpl implements UserService{
         user.setPhoneNumber(userDTO.getPhoneNumber());
         User savedUser = userRepository.save(user);
         return mapToUserDTO(savedUser);
+     
     }
 
     @Override
@@ -111,15 +113,12 @@ public class UserServiceImpl implements UserService{
     }
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-       User user=userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(()->new IllegalArgumentException("User not found"));
-       if(passwordEncoder.matches(loginRequest.getPassword(),user.getPassword())){
-        LoginResponse loginResponse=new LoginResponse();
-        loginResponse.setMessage("Login successful");
-       
-        return loginResponse;
-       }
-        throw new IllegalArgumentException("Invalid password");
-    }
-    
 
+        authenticationManager.authenticate(
+            loginRequest.getEmail(),
+            loginRequest.getPassword()
+        );
+
+       return null;
+    }
 }
