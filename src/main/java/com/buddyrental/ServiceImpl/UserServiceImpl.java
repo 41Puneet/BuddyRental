@@ -3,13 +3,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.buddyrental.DTO.UserRegisterDTO;
+
+import com.buddyrental.Auth.LoginRequest;
+import com.buddyrental.Auth.LoginResponse;
 import com.buddyrental.DTO.UserDTO;
+import com.buddyrental.DTO.UserRegisterDTO;
 import com.buddyrental.Entity.User;
 import com.buddyrental.Repository.User.UserRepository;
 import com.buddyrental.Services.UserService.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.buddyrental.enums.Role;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -35,6 +39,7 @@ public class UserServiceImpl implements UserService{
         user.setEmail(userRegisterDTO.getEmail());
         user.setPhoneNumber(userRegisterDTO.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+        user.setRole(Role.CUSTOMER);
         User savedUser=userRepository.save(user);
         return mapToUserDTO(savedUser);
     }
@@ -77,6 +82,15 @@ public class UserServiceImpl implements UserService{
         userRepository.deleteById(id);
     }
 
+    private boolean isLogin(LoginRequest loginRequest) {
+        Optional<User> user = userRepository.findByEmail(loginRequest.getEmail());
+        if (user.isPresent()) {
+            return passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword());
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
     @Override
     public UserDTO updateUser(UUID id, UserDTO userDTO) {
         if (!userRepository.existsById(id)) {
@@ -95,5 +109,17 @@ public class UserServiceImpl implements UserService{
         List<User> users = userRepository.findAll();
         return users.stream().map(this::mapToUserDTO).toList();
     }
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+       User user=userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(()->new IllegalArgumentException("User not found"));
+       if(passwordEncoder.matches(loginRequest.getPassword(),user.getPassword())){
+        LoginResponse loginResponse=new LoginResponse();
+        loginResponse.setMessage("Login successful");
+       
+        return loginResponse;
+       }
+        throw new IllegalArgumentException("Invalid password");
+    }
+    
 
 }
