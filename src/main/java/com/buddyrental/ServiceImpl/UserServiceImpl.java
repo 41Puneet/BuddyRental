@@ -2,7 +2,8 @@ package com.buddyrental.ServiceImpl;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.buddyrental.DTO.UserRegisterDTO;
 import com.buddyrental.Auth.LoginRequest;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService{
 
    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder,AuthenticationManager authenticationManager,JwtService jwtService) {
@@ -37,6 +39,7 @@ public class UserServiceImpl implements UserService{
     public UserDTO createUser(UserRegisterDTO userRegisterDTO) {
        Optional <User>UserInDB=userRepository.findByEmail(userRegisterDTO.getEmail());
       if(UserInDB.isPresent()){
+        logger.warn("This mail is already registered:{}",userRegisterDTO.getEmail());
         throw new IllegalArgumentException("Email already exists");
       }
       Optional<User>PhoneInDB=userRepository.findByPhoneNumber(userRegisterDTO.getPhoneNumber());
@@ -48,8 +51,8 @@ public class UserServiceImpl implements UserService{
         user.setEmail(userRegisterDTO.getEmail());
         user.setPhoneNumber(userRegisterDTO.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
-        user.setRole(Role.CUSTOMER);
         User savedUser=userRepository.save(user);
+        logger.info("User created successfully with email:{}",userRegisterDTO.getEmail());
         return mapToUserDTO(savedUser);
     }
   // Helper function of create Method
@@ -60,10 +63,6 @@ public class UserServiceImpl implements UserService{
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());
-        dto.setRole(user.getRole());
-        dto.setProfilePicture(user.getProfilePicture());
-        dto.setRating(user.getRating());
-        dto.setVerified(user.isVerified());
         return dto;
     }
 
@@ -90,9 +89,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
+            logger.warn("User not found with id:{}",id);
             throw new IllegalArgumentException("User not found with id: " + id);
         }
-        // delete the user if it exists
+       logger.info("User deleted successfully with id:{}",id);
         userRepository.deleteById(id);
     }
 
@@ -107,6 +107,7 @@ public class UserServiceImpl implements UserService{
         user.setEmail(userDTO.getEmail());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         User savedUser = userRepository.save(user);
+        logger.info("User updated successfully with email:{}",email);
         return mapToUserDTO(savedUser);
      
     }
@@ -117,26 +118,28 @@ public class UserServiceImpl implements UserService{
         return users.stream().map(this::mapToUserDTO).toList();
     }
     @Override
-public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
 
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            loginRequest.getEmail(),
-            loginRequest.getPassword()
-        )
-    );
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                loginRequest.getEmail(),
+                loginRequest.getPassword()
+            )
+        );
 
-    User user = userRepository.findByEmail(loginRequest.getEmail())
-            .orElseThrow(() ->
-                    new IllegalArgumentException("User not found"));
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+            .orElseThrow(() -> {
+                logger.warn("User is not present with email:{}", loginRequest.getEmail());
+                return new IllegalArgumentException("User not found");
+            });
 
-    String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail());
 
-    LoginResponse loginResponse = new LoginResponse();
-    loginResponse.setToken(token);
-    loginResponse.setEmail(user.getEmail());
-    loginResponse.setRole(user.getRole());
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setToken(token);
+        loginResponse.setEmail(user.getEmail());
+        loginResponse.setRole(Role.CUSTOMER);
 
-    return loginResponse;
+        return loginResponse;
 }
 }
