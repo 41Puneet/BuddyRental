@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserService{
         user.setEmail(userRegisterDTO.getEmail());
         user.setPhoneNumber(userRegisterDTO.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+        user.setRole(Role.CUSTOMER);
         User savedUser=userRepository.save(user);
         return mapToUserDTO(savedUser);
     }
@@ -59,6 +60,10 @@ public class UserServiceImpl implements UserService{
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setRole(user.getRole());
+        dto.setProfilePicture(user.getProfilePicture());
+        dto.setRating(user.getRating());
+        dto.setVerified(user.isVerified());
         return dto;
     }
 
@@ -92,12 +97,12 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDTO updateUser(UUID id, UserDTO userDTO) {
+    public UserDTO updateUser(String email, UserDTO userDTO) {
         
-        if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found with id: " + id);
+        if (userRepository.findByEmail(email)==null) {
+            throw new IllegalArgumentException("User not found with email: " + email);
         }
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findByEmail(email).get();
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
         user.setPhoneNumber(userDTO.getPhoneNumber());
@@ -112,13 +117,26 @@ public class UserServiceImpl implements UserService{
         return users.stream().map(this::mapToUserDTO).toList();
     }
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+public LoginResponse login(LoginRequest loginRequest) {
 
-        authenticationManager.authenticate(
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
             loginRequest.getEmail(),
             loginRequest.getPassword()
-        );
+        )
+    );
 
-       return null;
-    }
+    User user = userRepository.findByEmail(loginRequest.getEmail())
+            .orElseThrow(() ->
+                    new IllegalArgumentException("User not found"));
+
+    String token = jwtService.generateToken(user.getEmail());
+
+    LoginResponse loginResponse = new LoginResponse();
+    loginResponse.setToken(token);
+    loginResponse.setEmail(user.getEmail());
+    loginResponse.setRole(user.getRole());
+
+    return loginResponse;
+}
 }

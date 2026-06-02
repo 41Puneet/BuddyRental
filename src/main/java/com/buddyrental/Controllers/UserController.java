@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.HttpStatus;
 import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 
@@ -50,8 +52,9 @@ public ResponseEntity<String> deleteUserById(@PathVariable UUID id){
 }
 @PutMapping("/update")
 public ResponseEntity<UserDTO> updateUser(Authentication authentication, @RequestBody UserDTO userDTO){
-    return new ResponseEntity<>(userServiceImpl.updateUser(UUID.fromString(authentication.getName()), userDTO), HttpStatus.OK);
+    return new ResponseEntity<>(userServiceImpl.updateUser(authentication.getName(), userDTO), HttpStatus.OK);
 }
+@PreAuthorize("hasRole('ADMIN')")
 @GetMapping("/users/allUser")
 public List<UserDTO> getAllUsers(){
     return userServiceImpl.getAllUsers();

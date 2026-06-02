@@ -7,16 +7,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.security.Key;
 import io.jsonwebtoken.security.Keys;
-import com.buddyrental.Entity.User;
 
 @Service
 public class JwtService {
     
-    @Value("${jwt.secret.key}")
+    @Value("${jwt.secret}")
     private String secretKey;
 
 
-    @Value("${jwt.secret.key.expiration}")
+    @Value("${jwt.expiration}")
     private long secretKeyExpiration;
 
 
@@ -26,10 +25,10 @@ public class JwtService {
 
     public String generateToken(String email){
         return Jwts.builder()
-        .subject(email)
-        .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(new Date(System.currentTimeMillis()+secretKeyExpiration))
-        .signWith(GetSignInKey())
+        .setSubject(email)
+        .setIssuedAt(new Date(System.currentTimeMillis()))
+        .setExpiration(new Date(System.currentTimeMillis()+secretKeyExpiration))
+        .signWith(GetSignInKey(), SignatureAlgorithm.HS256)
         .compact();
     }
     public String extractEmail(String token){
