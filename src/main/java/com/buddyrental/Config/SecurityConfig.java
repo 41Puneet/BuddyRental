@@ -71,7 +71,7 @@ public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
     configuration.setAllowedOrigins(List.of(
-        "https://buddy-rental.onrender.com"
+        "https://buddy-rental.onrender.com/"
     ));
 
     configuration.setAllowedMethods(List.of(
