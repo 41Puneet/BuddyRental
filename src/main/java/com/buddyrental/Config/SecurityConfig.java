@@ -1,6 +1,4 @@
 package com.buddyrental.Config;
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -68,18 +66,12 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http)
 }
 @Bean
 public CorsConfigurationSource corsConfigurationSource() {
+
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(List.of(
-        "https://buddy-rental.onrender.com/"
-    ));
-
-    configuration.setAllowedMethods(List.of(
-        "GET", "POST", "PUT", "DELETE", "OPTIONS"
-    ));
-
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.setAllowCredentials(true);
+    configuration.addAllowedOriginPattern("*");
+    configuration.addAllowedMethod("*");
+    configuration.addAllowedHeader("*");
 
     UrlBasedCorsConfigurationSource source =
             new UrlBasedCorsConfigurationSource();
