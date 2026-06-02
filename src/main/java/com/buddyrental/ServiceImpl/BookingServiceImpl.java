@@ -2,7 +2,8 @@ package com.buddyrental.ServiceImpl;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingHistoryRepository bookingRepository;
     private final UserRepository userRepository;
-
+private final Logger logger=LoggerFactory.getLogger(BookingServiceImpl.class);
     public BookingServiceImpl(BookingHistoryRepository bookingRepository,UserRepository userRepository){
         this.bookingRepository=bookingRepository;
         this.userRepository=userRepository;
@@ -40,7 +41,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDTO createBooking(BookingDTO bookingDTO) {
         Booking booking =new Booking();
-        booking.setUser(userRepository.findById(bookingDTO.getUserId()).orElseThrow(()->new IllegalArgumentException("User not found with id: "+bookingDTO.getUserId())));
+        booking.setUser(userRepository.findById(bookingDTO.getUserId()).orElseThrow(() -> {
+            logger.warn("User not found with id: " + bookingDTO.getUserId());
+            return new IllegalArgumentException("User not found with id: " + bookingDTO.getUserId());
+        }));
         booking.setTotalPrice(bookingDTO.getTotalPrice());
         booking.setadvancePayment(bookingDTO.getadvancePayment());
         booking.setBookingStatus(bookingDTO.getBookingStatus());
@@ -53,8 +57,10 @@ public class BookingServiceImpl implements BookingService {
     public void deleteBooking(UUID bookingId) {
         Optional<Booking>bookingOpt=bookingRepository.findById(bookingId);
         if(bookingOpt.isPresent()){
+            logger.info("Booking deleted successfully with id:{}",bookingId);
             bookingRepository.deleteById(bookingId);
         }else{
+            logger.warn("Booking not found with id:{}",bookingId);
             throw new IllegalArgumentException("Booking not found with id: "+bookingId);
         }
         
@@ -96,12 +102,16 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDTO updateBooking(UUID bookingId, BookingDTO bookingDTO) {
-        Booking booking=bookingRepository.findById(bookingId).orElseThrow(()->new IllegalArgumentException("Booking not found with id: "+bookingId));
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> {
+                    logger.warn("Booking not found with id:{}", bookingId);
+                    return new IllegalArgumentException("Booking not found with id: " + bookingId);
+                });
         booking.setTotalPrice(bookingDTO.getTotalPrice());
         booking.setadvancePayment(bookingDTO.getadvancePayment());
         booking.setBookingStatus(bookingDTO.getBookingStatus());
         booking.setPaymentStatus(bookingDTO.getPaymentStatus());
-        Booking updatedBooking=bookingRepository.save(booking);
+        Booking updatedBooking = bookingRepository.save(booking);
         return mapToBookingDTO(updatedBooking);
     }
     

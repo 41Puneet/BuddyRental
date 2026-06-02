@@ -7,7 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.buddyrental.DTO.VehicleDTO;
 import com.buddyrental.Entity.User;
 import com.buddyrental.Entity.Vehicle;
@@ -22,6 +23,7 @@ import com.buddyrental.enums.VehicleType;
 public class VehicleServiceImpl implements VehicleService{
     private VehicleRepository vehicleRepository;
     private  final UserRepository userRepository;
+    private final Logger logger=LoggerFactory.getLogger(VehicleServiceImpl.class);
     public VehicleServiceImpl(UserRepository userRepository,VehicleRepository vehicleRepository){
         this.vehicleRepository=vehicleRepository;
         this.userRepository=userRepository;
@@ -30,8 +32,10 @@ public class VehicleServiceImpl implements VehicleService{
     public VehicleDTO addVehicle(VehicleDTO vehicleDTO) {
        
        User owner = userRepository.findById(vehicleDTO.getownerId())
-        .orElseThrow(() ->
-                new IllegalArgumentException("Owner not found"));
+        .orElseThrow(() -> {
+            logger.warn("Owner not found with id:{}", vehicleDTO.getownerId());
+            return new IllegalArgumentException("Owner not found");
+        });
        Vehicle vehicle=new Vehicle();
        vehicle.setType(vehicleDTO.getType());
        vehicle.setBrand(vehicleDTO.getBrand());
