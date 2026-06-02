@@ -2,7 +2,8 @@ package com.buddyrental.ServiceImpl;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final BookingHistoryRepository bookingHistoryRepository;
+    private final Logger logger=LoggerFactory.getLogger(PaymentServiceImpl.class);
+
 
     public PaymentServiceImpl(PaymentRepository paymentRepository, BookingHistoryRepository bookingHistoryRepository) {
         this.paymentRepository = paymentRepository;
@@ -105,9 +108,10 @@ return payment.map(this::mapToDTO);
         existingPayment.setPaymentStatus(paymentDTO.getPaymentStatus());
         existingPayment.setGatewayName(paymentDTO.getGatewayName());
         Payment updatedPayment=paymentRepository.save(existingPayment);
+        logger.info("Payment updated successfully with id:{}",paymentId);
         return mapToDTO(updatedPayment);
     }
+    logger.warn("Payment not found with id:{}",paymentId);
         throw new IllegalArgumentException("Payment not found");
     }
-    
 }

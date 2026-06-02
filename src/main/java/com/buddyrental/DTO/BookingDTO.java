@@ -37,7 +37,7 @@ public class BookingDTO {
         return advancePayment;
     }
     public void setadvancePayment(int advancePayment) {
-        advancePayment = advancePayment;
+        this.advancePayment = advancePayment;
     }
     public BookingStatus getBookingStatus() {
         return bookingStatus;

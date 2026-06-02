@@ -46,16 +46,22 @@ public class VehicleServiceImpl implements VehicleService{
         vehicle.setFueltype(vehicleDTO.getFueltype());
         vehicle.setTransmissionType(vehicleDTO.getTransmissionType());
         vehicle.setCity(vehicleDTO.getCity());
+        vehicle.setState(vehicleDTO.getState());
+        vehicle.setOwner(owner);
         vehicle.setAvailable(true);
         
         Vehicle savedVehicle=vehicleRepository.save(vehicle);
-        return mapToVehicleDTO(savedVehicle);
+        logger.info("Vehicle added successfully with id:{}",vehicleDTO.getownerId());
+         return mapToVehicleDTO(savedVehicle);
 
     }
     private VehicleDTO mapToVehicleDTO(Vehicle vehicle){
         if(vehicle==null) return null;
         VehicleDTO dto=new VehicleDTO();
-        dto.setownerId(vehicle.getOwner().getId());
+        dto.setVehicleId(vehicle.getVehicleId());
+        if(vehicle.getOwner()!=null){
+            dto.setownerId(vehicle.getOwner().getId());
+        }
         dto.setType(vehicle.getType());
         dto.setBrand(vehicle.getBrand());
         dto.setVehicleNumber(vehicle.getVehicleNumber());
@@ -65,14 +71,18 @@ public class VehicleServiceImpl implements VehicleService{
         dto.setFueltype(vehicle.getFueltype());
         dto.setTransmissionType(vehicle.getTransmissionType());
         dto.setCity(vehicle.getCity());
+        dto.setState(vehicle.getState());
+        dto.setAvailable(vehicle.isAvailable());
         return dto;
     }
 
     @Override
     public void deleteVehicle(UUID vehicleId) {
         if(!vehicleRepository.existsById(vehicleId)){
-            throw new IllegalArgumentException("Vehicle not found with"+vehicleId);
+            logger.warn("Vehicle not found with id:{}",vehicleId);
+                        throw new IllegalArgumentException("Vehicle not found with"+vehicleId);
         }
+        logger.info("Vehicle deleted successfully with id:{}",vehicleId);
         vehicleRepository.deleteById(vehicleId);
         
     }
@@ -150,9 +160,12 @@ public class VehicleServiceImpl implements VehicleService{
             vehicle.setFueltype(vehicleDTO.getFueltype());
             vehicle.setTransmissionType(vehicleDTO.getTransmissionType());
             vehicle.setCity(vehicleDTO.getCity());
+            vehicle.setState(vehicleDTO.getState());
             Vehicle saved = vehicleRepository.save(vehicle);
+            logger.info("Vehicle updated successfully with id:{}",vehicleId);
             return mapToVehicleDTO(saved);
         }
+        logger.warn("Vehicle not found with id:{}",vehicleId);
         throw new IllegalArgumentException("Vehicle not found with id: " + vehicleId);
     }
     

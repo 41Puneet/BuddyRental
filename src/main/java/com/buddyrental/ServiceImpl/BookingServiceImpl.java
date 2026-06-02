@@ -112,6 +112,7 @@ private final Logger logger=LoggerFactory.getLogger(BookingServiceImpl.class);
         booking.setBookingStatus(bookingDTO.getBookingStatus());
         booking.setPaymentStatus(bookingDTO.getPaymentStatus());
         Booking updatedBooking = bookingRepository.save(booking);
+        logger.info("Booking updated successfully with id:{}",bookingId);
         return mapToBookingDTO(updatedBooking);
     }
     

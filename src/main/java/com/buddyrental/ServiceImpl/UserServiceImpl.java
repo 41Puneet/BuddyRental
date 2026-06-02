@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService{
         user.setEmail(userRegisterDTO.getEmail());
         user.setPhoneNumber(userRegisterDTO.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+        user.setRole(Role.CUSTOMER);
         User savedUser=userRepository.save(user);
         logger.info("User created successfully with email:{}",userRegisterDTO.getEmail());
         return mapToUserDTO(savedUser);
@@ -63,6 +64,10 @@ public class UserServiceImpl implements UserService{
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setRole(user.getRole());
+        dto.setProfilePicture(user.getProfilePicture());
+        dto.setVerified(user.isVerified());
+        dto.setRating(user.getRating());
         return dto;
     }
 
@@ -138,8 +143,8 @@ public class UserServiceImpl implements UserService{
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setToken(token);
         loginResponse.setEmail(user.getEmail());
-        loginResponse.setRole(Role.CUSTOMER);
-
+        loginResponse.setRole(user.getRole());
+        logger.info("User logged in successfully with email:{}", loginRequest.getEmail());
         return loginResponse;
 }
 }
