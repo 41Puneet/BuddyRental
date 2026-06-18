@@ -1,5 +1,6 @@
 package com.buddyrental.DTO;
 import java.util.UUID;
+
 import com.buddyrental.enums.Role;
 
 public class UserDTO {
@@ -9,14 +10,14 @@ public class UserDTO {
     private String phoneNumber;
     private Role role;
     private String profilePicture;
-    private boolean isVerified;
+    private Boolean isVerified;
     private Double rating;
 
     public UserDTO() {
     }
 
     public UserDTO(UUID id, String fullname, String email, String phoneNumber,
-                   Role role, String profilePicture, boolean isVerified,
+                   Role role, String profilePicture, Boolean isVerified,
                    Double rating) {
         this.id = id;
         this.fullname = fullname;
@@ -65,10 +66,10 @@ public class UserDTO {
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
-    public boolean isVerified() {
+    public Boolean isVerified() {
         return isVerified;
     }
-    public void setVerified(boolean isVerified) {
+    public void setVerified(Boolean isVerified) {
         this.isVerified = isVerified;
     }
     public Double getRating() {

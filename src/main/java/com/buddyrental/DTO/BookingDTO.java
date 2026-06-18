@@ -6,6 +6,7 @@ import com.buddyrental.enums.PaymentStatus;
 
 
 public class BookingDTO {
+    private UUID bookingId;
     private UUID userId;
     private int totalPrice;
     private int advancePayment;
@@ -20,6 +21,12 @@ public class BookingDTO {
         this.advancePayment = advancePayment;
         this.bookingStatus = bookingStatus;
         this.paymentStatus = paymentStatus;
+    }
+    public UUID getBookingId() {
+        return bookingId;
+    }
+    public void setBookingId(UUID bookingId) {
+        this.bookingId = bookingId;
     }
     public UUID getUserId() {
         return userId;

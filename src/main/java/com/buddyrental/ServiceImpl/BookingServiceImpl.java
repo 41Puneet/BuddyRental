@@ -27,10 +27,13 @@ private final Logger logger=LoggerFactory.getLogger(BookingServiceImpl.class);
         this.bookingRepository=bookingRepository;
         this.userRepository=userRepository;
     }
-        private BookingDTO mapToBookingDTO(Booking booking){
+    private BookingDTO mapToBookingDTO(Booking booking){
             if(booking==null) return null;
             BookingDTO dto=new BookingDTO();
-            
+            dto.setBookingId(booking.getBookingId());
+            if (booking.getUser() != null) {
+                dto.setUserId(booking.getUser().getId());
+            }
             dto.setTotalPrice(booking.getTotalPrice());
             dto.setadvancePayment(booking.getadvancePayment());
             dto.setBookingStatus(booking.getBookingStatus());
@@ -47,8 +50,14 @@ private final Logger logger=LoggerFactory.getLogger(BookingServiceImpl.class);
         }));
         booking.setTotalPrice(bookingDTO.getTotalPrice());
         booking.setadvancePayment(bookingDTO.getadvancePayment());
-        booking.setBookingStatus(bookingDTO.getBookingStatus());
-        booking.setPaymentStatus(bookingDTO.getPaymentStatus());
+        booking.setBookingStatus(
+                bookingDTO.getBookingStatus() == null
+                        ? BookingStatus.Pending
+                        : bookingDTO.getBookingStatus());
+        booking.setPaymentStatus(
+                bookingDTO.getPaymentStatus() == null
+                        ? com.buddyrental.enums.PaymentStatus.Pending
+                        : bookingDTO.getPaymentStatus());
         Booking savedBooking=bookingRepository.save(booking);
         return mapToBookingDTO(savedBooking);
     }

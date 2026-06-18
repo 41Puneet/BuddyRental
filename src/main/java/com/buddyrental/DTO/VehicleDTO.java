@@ -24,11 +24,11 @@ public class VehicleDTO {
     private TransmissionType transmissionType;
     private String city;
     private String state;
-    private boolean isAvailable;
+    private boolean available;
     public VehicleDTO(){
 
     }
-    public VehicleDTO(UUID ownerId,UUID VehicleId, VehicleType type, String brand, String vehicleNumber, String description, int pricePerDay, int securityDeposit, Fueltype fueltype, TransmissionType transmissionType, String city, String state, boolean isAvailable) {
+    public VehicleDTO(UUID ownerId,UUID VehicleId, VehicleType type, String brand, String vehicleNumber, String description, int pricePerDay, int securityDeposit, Fueltype fueltype, TransmissionType transmissionType, String city, String state, boolean available) {
         this.ownerId = ownerId;
         this.vehicleId = VehicleId;
         this.type = type;
@@ -41,7 +41,7 @@ public class VehicleDTO {
         this.transmissionType = transmissionType;
         this.city = city;
         this.state = state;
-        this.isAvailable = isAvailable;
+        this.available = available;
     }
     public UUID getownerId() {
         return ownerId;
@@ -110,10 +110,13 @@ public class VehicleDTO {
         this.state = state;
     }
     public boolean isAvailable() {
-        return isAvailable;
+        return available;
     }
-    public void setAvailable(boolean isAvailable) {
-        this.isAvailable = isAvailable;
+    public boolean getAvailable() {
+        return available;
+    }
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
 

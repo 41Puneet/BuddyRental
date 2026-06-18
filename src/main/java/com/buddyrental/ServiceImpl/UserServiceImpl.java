@@ -2,21 +2,23 @@ package com.buddyrental.ServiceImpl;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.buddyrental.DTO.UserRegisterDTO;
+
 import com.buddyrental.Auth.LoginRequest;
 import com.buddyrental.Auth.LoginResponse;
 import com.buddyrental.Auth.Security.JwtService;
 import com.buddyrental.DTO.UserDTO;
+import com.buddyrental.DTO.UserRegisterDTO;
 import com.buddyrental.Entity.User;
 import com.buddyrental.Repository.User.UserRepository;
 import com.buddyrental.Services.UserService.UserService;
 import com.buddyrental.enums.Role;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -37,6 +39,11 @@ public class UserServiceImpl implements UserService{
     //Create a User Method
     @Override
     public UserDTO createUser(UserRegisterDTO userRegisterDTO) {
+       if (userRegisterDTO.getConfirmPassword() != null
+               && (userRegisterDTO.getPassword() == null
+               || !userRegisterDTO.getPassword().equals(userRegisterDTO.getConfirmPassword()))) {
+        throw new IllegalArgumentException("Password and confirm password do not match");
+       }
        Optional <User>UserInDB=userRepository.findByEmail(userRegisterDTO.getEmail());
       if(UserInDB.isPresent()){
         logger.warn("This mail is already registered:{}",userRegisterDTO.getEmail());
@@ -103,14 +110,28 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDTO updateUser(String email, UserDTO userDTO) {
-        
-        if (userRepository.findByEmail(email)==null) {
-            throw new IllegalArgumentException("User not found with email: " + email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+
+        String updatedName = userDTO.getName() != null ? userDTO.getName() : user.getName();
+        String updatedEmail = userDTO.getEmail() != null ? userDTO.getEmail() : user.getEmail();
+        String updatedPhoneNumber = userDTO.getPhoneNumber() != null
+                ? userDTO.getPhoneNumber()
+                : user.getPhoneNumber();
+
+        if (!updatedEmail.equalsIgnoreCase(user.getEmail())
+                && userRepository.existsByEmail(updatedEmail)) {
+            throw new IllegalArgumentException("Email already exists");
         }
-        User user = userRepository.findByEmail(email).get();
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setPhoneNumber(userDTO.getPhoneNumber());
+
+        if (!updatedPhoneNumber.equals(user.getPhoneNumber())
+                && userRepository.findByPhoneNumber(updatedPhoneNumber).isPresent()) {
+            throw new IllegalArgumentException("Phone number already exists");
+        }
+
+        user.setName(updatedName);
+        user.setEmail(updatedEmail);
+        user.setPhoneNumber(updatedPhoneNumber);
         User savedUser = userRepository.save(user);
         logger.info("User updated successfully with email:{}",email);
         return mapToUserDTO(savedUser);
